@@ -1,0 +1,124 @@
+import { useState, useEffect } from "react";
+import Paginate from "./paginate";
+import axios from "axios";
+const Post = () => {
+  const [posts, setPosts] = useState([]);
+  const [pageNo, setPageNo] = useState(7);
+  useEffect(() => {
+    const fetchData = async () => {
+      const { data } = await axios.get(
+        `https://picsum.photos/v2/list?page=${pageNo}&limit=5`
+      );
+      setPosts(data);
+    };
+    fetchData();
+  }, [pageNo]);
+  return (
+    <>
+      <div className="post-container">
+        {posts.map((item, index) => (
+          <img src={item.download_url} key={index} />
+        ))}
+      </div>
+      <Paginate pageNo={pageNo} setPageNo={setPageNo} />
+    </>
+  );
+};
+
+export default Post;
+
+
+
+
+const Paginate = ({ pageNo, setPageNo }) => {
+  const prevThreeNoArr = Array.from(
+    { length: 3 },
+    (_, index) => pageNo - 1 - index
+  )
+    .filter((value) => value > 0)
+    .reverse();
+
+  const nextFourNoArr = Array.from({ length: 4 }, (_, index) => pageNo + index);
+
+  const finalArr = [...prevThreeNoArr, ...nextFourNoArr];
+
+  const handlePrev = () => {
+    setPageNo(pageNo - 1);
+  };
+  const handleNext = () => {
+    setPageNo(pageNo + 1);
+  };
+  return (
+    <>
+      <div className="paginate-container">
+        {pageNo > 1 ? (
+          <div className="page-btn" onClick={handlePrev}>
+            {"<"}
+          </div>
+        ) : (
+          ""
+        )}
+        {finalArr.map((value, index) => (
+          <div
+            className={pageNo === value ? "page-btn active" : "page-btn"}
+            onClick={() => setPageNo(value)}
+          >
+            {value}
+          </div>
+        ))}
+        <div className="page-btn" onClick={handleNext}>
+          {">"}
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default Paginate;
+
+
+
+
+
+
+.App {
+  font-family: sans-serif;
+  text-align: center;
+}
+.post-container {
+  width: 700px;
+  height: 170px;
+}
+
+img {
+  width: 120px;
+  height: 150px;
+  border-radius: 1rem;
+  margin-right: 15px;
+}
+.paginate-container {
+  width: "700px";
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.page-btn {
+  background: black;
+  color: white;
+  padding: 1rem;
+  border-radius: 1rem;
+}
+
+.active {
+  background: white;
+  color: black;
+  border: 1px solid black;
+}
+
+.page-btn:hover {
+  transform: scale(0.8);
+}
+
+
+
+

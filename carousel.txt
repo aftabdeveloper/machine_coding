@@ -1,0 +1,121 @@
+import { useState, useEffect, useRef } from "react";
+import data from "../data.json";
+const Carousel = () => {
+  const [index, setIndex] = useState(0);
+  const ref = useRef(null);
+  const handlePrev = () => {
+    index > 0 ? setIndex(index - 1) : setIndex(data.length - 1);
+  };
+  console.log(index + "on render");
+  console.log(ref.current + "ref on render");
+
+  const handleNext = () => {
+    setIndex((prevIndex) => {
+      console.log(prevIndex + "inside cb");
+
+      if (prevIndex === data.length - 1) return 0;
+      return prevIndex + 1;
+    });
+    // index === data.length - 1 ? setIndex(0) : setIndex(index + 1);
+  };
+
+  useEffect(() => {
+    ref.current = setInterval(handleNext, 1000);
+    console.log(ref.current);
+    return () => {
+      clearInterval(ref.current);
+    };
+  }, []);
+  return (
+    <>
+      <div
+        className="container"
+        onMouseEnter={() => clearInterval(ref.current)}
+        onMouseLeave={() => {
+          ref.current = setInterval(handleNext, 1000);
+        }}
+      >
+        <div onClick={handlePrev} className="left-btn">
+          {"<"}
+        </div>
+        <div className="image-container">
+          <img src={data[index].download_url} />
+        </div>
+        <div onClick={handleNext} className="right-btn">
+          {">"}
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default Carousel;
+
+
+
+create data.json file
+
+
+[
+{
+    "id": "102",
+    "author": "Ben Moore",
+    "width": 4320,
+    "height": 3240,
+    "url": "https://unsplash.com/photos/pJILiyPdrXI",
+    "download_url": "https://picsum.photos/id/102/4320/3240"
+  },
+  {
+    "id": "103",
+    "author": "Ilham Rahmansyah",
+    "width": 2592,
+    "height": 1936,
+    "url": "https://unsplash.com/photos/DwTZwZYi9Ww",
+    "download_url": "https://picsum.photos/id/103/2592/1936"
+  },
+  {
+    "id": "104",
+    "author": "Dyaa Eldin",
+    "width": 3840,
+    "height": 2160,
+    "url": "https://unsplash.com/photos/2fl-ocJ5MOA",
+    "download_url": "https://picsum.photos/id/104/3840/2160"
+  }
+]
+
+
+
+
+.App {
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.container {
+  position: relative;
+}
+
+img {
+  width: 100%;
+  height: 300px;
+}
+
+.left-btn,
+.right-btn {
+  position: absolute;
+  background: black;
+  color: white;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.left-btn {
+  left: 1rem;
+  top: 50%;
+}
+
+.right-btn {
+  right: 1rem;
+  top: 50%;
+}
+
